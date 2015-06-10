@@ -1,0 +1,35 @@
+diff --git a/configure.ac b/configure.ac
+index ac84b29..145f4e3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -156,6 +156,12 @@ AC_ARG_WITH([manual],
+   [],
+   [with_manual=yes])
+ AM_CONDITIONAL([WITH_MANUAL], [test x"$with_manual" != "xno"])
++if test x"$with_manual" != "xno"; then
++  MAYBE_MANUAL=man3 man7
++else
++  MAYBE_MANUAL=
++fi
++AC_SUBST([MAYBE_MANUAL])
+ 
+ # 'quvi-object' is currently a globally accessible module. Lua 5.2
+ # discourages this practice by removing the luaL_register (and adds the
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index 02cfa4c..0fe6006 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -1,9 +1,7 @@
+ EXTRA_DIST=asciidoc.conf footer.txt
+ 
+ SUBDIRS=
+-if WITH_MANUAL
+-SUBDIRS+=man3 man7
+-endif
++SUBDIRS+=$(MAYBE_MANUAL)
+ if HAVE_DOXYGEN
+ SUBDIRS+=dox
+ endif
+-- 
+2.1.0
+

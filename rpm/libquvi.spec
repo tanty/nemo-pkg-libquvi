@@ -1,17 +1,20 @@
 Name:           libquvi
-Version:        0.4.1
+Version:        0.9.4
 Release:        1
 Summary:        Library for parsing video download links
 Group:          Development/Libraries
 License:        LGPLv2+
 URL:            http://quvi.sourceforge.net/
 Source0:        http://heanet.dl.sourceforge.net/project/quvi/0.4/%{name}/%{name}-%{version}.tar.xz
-Patch0:	        woarkaround-old-automake.patch
+Patch0:         do-not-dist-man.patch
 Requires:       libquvi-scripts
 BuildRequires:  gettext-devel
 BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(libcurl)
-BuildRequires:  pkgconfig(libquvi-scripts)
+BuildRequires:  pkgconfig(libquvi-scripts-0.9)
+BuildRequires:  pkgconfig(libproxy-1.0)
+BuildRequires:  pkgconfig(libgcrypt)
+BuildRequires:  pkgconfig(glib-2.0)
 
 %description
  Library to parse Adobe flash video download links. It supports Youtube
@@ -30,12 +33,13 @@ developing applications that use %{name}.
 
 %prep
 %setup -q -n %{name}-%{version}/%{name}
+
 %patch0 -p1
 
 %build
-%autogen 
-%configure --disable-static
-./gen-ver.sh > VERSION
+echo v%{version} > VERSION
+./bootstrap.sh
+%configure --without-manual --disable-static
 touch ChangeLog
 
 make %{?jobs:-j%jobs}
@@ -52,10 +56,9 @@ rm -rf %{buildroot}
 
 
 %files
-%{_libdir}/*.so.*
+%{_libdir}/*-%{version}.so
 
 %files devel
 %{_includedir}/*
-%{_libdir}/*.so
-%{_libdir}/pkgconfig/%{name}.pc
-%{_mandir}/man3/*
+%{_libdir}/*-0.9.so
+%{_libdir}/pkgconfig/%{name}-0.9.pc
